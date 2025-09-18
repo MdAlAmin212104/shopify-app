@@ -17,6 +17,20 @@ import { Form, useLoaderData, useFetcher } from "@remix-run/react";
 import { useState } from "react";
 import { authenticate } from "app/shopify.server";
 
+
+type ProductNode = {
+  node: {
+    id: string;
+    title: string;
+    handle: string;
+    descriptionHtml: string;
+    productType: string;
+    vendor: string;
+    status: string;
+    tags?: string[];
+  };
+};
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
   const productQuery = `query {
@@ -45,7 +59,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const { admin } = await authenticate.admin(request);
-
   const formDataObject = Object.fromEntries(formData);
 
   if (formDataObject._action === "delete") {
@@ -108,23 +121,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   });
 
   const result = await response.json();
-  console.log(result, "this is data");
 
-  return {};
+  return {result};
 };
 
-type ProductNode = {
-  node: {
-    id: string;
-    title: string;
-    handle: string;
-    descriptionHtml: string;
-    productType: string;
-    vendor: string;
-    status: string;
-    tags?: string[];
-  };
-};
 
 export default function Crud() {
   const { products } = useLoaderData<{ products: ProductNode[] }>();
