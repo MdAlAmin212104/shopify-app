@@ -1,0 +1,5 @@
+- [x] Update action function to handle delete with productDelete mutation
+- [x] Import useFetcher from @remix-run/react
+- [x] Add fetcher = useFetcher() in the component
+- [x] Modify handleClick to use fetcher.submit for delete
+- [x] Remove Form wrapper from Delete button

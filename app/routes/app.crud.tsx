@@ -10,14 +10,17 @@ import {
   Text,
   useIndexResourceState,
 } from "@shopify/polaris";
-import { Form, useLoaderData } from "@remix-run/react";
+import {
+  DeleteIcon
+} from '@shopify/polaris-icons';
+import { Form, useLoaderData, useFetcher } from "@remix-run/react";
 import { useState } from "react";
 import { authenticate } from "app/shopify.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
   const productQuery = `query {
-        products(first: 10) {
+        products(first: 50) {
             edges {
                 node {
                     id
@@ -44,6 +47,27 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
 
   const formDataObject = Object.fromEntries(formData);
+
+  if (formDataObject._action === "delete") {
+    const productDeleteMutation = `
+      mutation productDelete($id: ID!) {
+        productDelete(input: {id: $id}) {
+          deletedProductId
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    `;
+
+    const response = await admin.graphql(productDeleteMutation, {
+      variables: { id: formDataObject.id },
+    });
+
+    const result = await response.json();
+    return {result};
+  }
 
   // Map properly to ProductInput
   const productInput = {
@@ -89,7 +113,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return {};
 };
 
-
 type ProductNode = {
   node: {
     id: string;
@@ -105,7 +128,11 @@ type ProductNode = {
 
 export default function Crud() {
   const { products } = useLoaderData<{ products: ProductNode[] }>();
-  console.log(products);
+  const fetcher = useFetcher();
+
+  const handleClick = (id: string) => {
+    fetcher.submit({ id, _action: "delete" }, { method: "post" });
+  };
 
   const [formValues, setFormValues] = useState({
     title: "",
@@ -128,7 +155,6 @@ export default function Crud() {
     tags: product.tags?.join(", ") || "",
   }));
 
-
   const orders = productsRows;
   const resourceName = {
     singular: "order",
@@ -140,7 +166,7 @@ export default function Crud() {
 
   const rowMarkup = orders.map(
     (
-      { id, title, handle, descriptionHtml, productType,  vendor, status, tags },
+      { id, title, handle, descriptionHtml, productType, vendor, status, tags },
       index,
     ) => (
       <IndexTable.Row
@@ -165,6 +191,16 @@ export default function Crud() {
         <IndexTable.Cell>{vendor}</IndexTable.Cell>
         <IndexTable.Cell>{status}</IndexTable.Cell>
         <IndexTable.Cell>{tags}</IndexTable.Cell>
+        <IndexTable.Cell>
+          <Button
+            variant="primary"
+            icon={DeleteIcon}
+            tone="critical"
+            onClick={() => handleClick(id)}
+          >
+            Delete
+          </Button>
+        </IndexTable.Cell>
       </IndexTable.Row>
     ),
   );
@@ -259,6 +295,7 @@ export default function Crud() {
                 { title: "vendor" },
                 { title: "status" },
                 { title: "tags" },
+                { title: "action" },
               ]}
             >
               {rowMarkup}
