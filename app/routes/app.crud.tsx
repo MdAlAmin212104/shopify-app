@@ -7,14 +7,12 @@ import {
   Button,
   Card,
   IndexTable,
-  Badge,
   Text,
   useIndexResourceState,
 } from "@shopify/polaris";
 import { Form, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import { authenticate } from "app/shopify.server";
-import { Product } from "@shopify/app-bridge-react";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
@@ -91,8 +89,22 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return {};
 };
 
+
+type ProductNode = {
+  node: {
+    id: string;
+    title: string;
+    handle: string;
+    descriptionHtml: string;
+    productType: string;
+    vendor: string;
+    status: string;
+    tags?: string[];
+  };
+};
+
 export default function Crud() {
-  const { products } = useLoaderData<typeof loader>();
+  const { products } = useLoaderData<{ products: ProductNode[] }>();
   console.log(products);
 
   const [formValues, setFormValues] = useState({
@@ -116,35 +128,6 @@ export default function Crud() {
     tags: product.tags?.join(", ") || "",
   }));
 
-  //   const orders = [
-  //     {
-  //       id: '1020',
-  //       order: '#1020',
-  //       date: 'Jul 20 at 4:34pm',
-  //       customer: 'Jaydon Stanton',
-  //       total: '$969.44',
-  //       paymentStatus: <Badge progress="complete">Paid</Badge>,
-  //       fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
-  //     },
-  //     {
-  //       id: '1019',
-  //       order: '#1019',
-  //       date: 'Jul 20 at 3:46pm',
-  //       customer: 'Ruben Westerfelt',
-  //       total: '$701.19',
-  //       paymentStatus: <Badge progress="partiallyComplete">Partially paid</Badge>,
-  //       fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
-  //     },
-  //     {
-  //       id: '1018',
-  //       order: '#1018',
-  //       date: 'Jul 20 at 3.44pm',
-  //       customer: 'Leo Carder',
-  //       total: '$798.24',
-  //       paymentStatus: <Badge progress="complete">Paid</Badge>,
-  //       fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
-  //     },
-  //   ];
 
   const orders = productsRows;
   const resourceName = {
@@ -157,7 +140,7 @@ export default function Crud() {
 
   const rowMarkup = orders.map(
     (
-      { id, title, handle, descriptionHtml, productType, vendor, status, tags },
+      { id, title, handle, descriptionHtml, productType,  vendor, status, tags },
       index,
     ) => (
       <IndexTable.Row
@@ -174,7 +157,7 @@ export default function Crud() {
         <IndexTable.Cell>{title}</IndexTable.Cell>
         <IndexTable.Cell>{handle}</IndexTable.Cell>
         <IndexTable.Cell>
-          <Text as="span" alignment="end" numeric>
+          <Text as="span" alignment="start">
             {descriptionHtml}
           </Text>
         </IndexTable.Cell>
@@ -187,7 +170,7 @@ export default function Crud() {
   );
 
   return (
-    <Page fullWidth narrowWidth title="App Crud">
+    <Page title="App Crud" fullWidth>
       <Layout>
         <Layout.Section>
           <Form method="post">
@@ -272,6 +255,7 @@ export default function Crud() {
                 { title: "title" },
                 { title: "handle" },
                 { title: "descriptionHtml" },
+                { title: "productType" },
                 { title: "vendor" },
                 { title: "status" },
                 { title: "tags" },
