@@ -58,7 +58,7 @@ export const SetupGuide = ({ onDismiss, onStepComplete, items }: SetupGuideProps
   const completedItemsLength = items.filter((item) => item.complete).length;
 
   return (
-    <Card padding='0'>
+    <Card padding='100' roundedAbove='md'>
       <Box padding='400' paddingBlockEnd='400'>
         <BlockStack>
           <InlineStack align='space-between' blockAlign='center'>
@@ -112,9 +112,10 @@ export const SetupGuide = ({ onDismiss, onStepComplete, items }: SetupGuideProps
               />
             </ButtonGroup>
           </InlineStack>
-          <Text as='p' variant='bodyMd'>
+            <Text as='p' variant='bodyMd'>
             Use this personalized guide to get your app up and running.
           </Text>
+          
           <div style={{ marginTop: '.8rem' }}>
             <InlineStack blockAlign='center' gap='200'>
               {completedItemsLength === items.length ? (
@@ -208,29 +209,27 @@ const SetupItem = ({
     <div className={`${styles.setupItem} ${expanded ? styles.setupItemExpanded : ""}`}>
         <InlineStack gap='200' align='start' blockAlign='start' wrap={false}>
           <Tooltip content={complete ? 'Mark as not done' : 'Mark as done'} activatorWrapper='div'>
-            <Button onClick={completeItem} variant='monochromePlain'>
-              <div className={styles.completeButton}>
-                {loading ? (
-                  <Spinner size='small' />
-                ) : complete ? (
-                  <div
-                    style={{
-                      width: '1.25rem',
-                      height: '1.25rem',
-                      borderRadius: '100%',
-                      background: '#303030',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <Icon source={CheckIcon}tone='critical' />
-                  </div>
-                ) : (
-                  outlineSvg
-                )}
-              </div>
-            </Button>
+            <div onClick={completeItem} className={styles.completeButton} role="button" tabIndex={0}>
+              {loading ? (
+                <Spinner size='small' />
+              ) : complete ? (
+                <div
+                  style={{
+                    width: '1.25rem',
+                    height: '1.25rem',
+                    borderRadius: '100%',
+                    background: '#303030',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                  }}
+                >
+                  <Icon source={CheckIcon} tone='critical' />
+                </div>
+              ) : (
+                outlineSvg
+              )}
+            </div>
           </Tooltip>
           <div
             className={styles.itemContent}
