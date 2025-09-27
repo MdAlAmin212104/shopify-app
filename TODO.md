@@ -1,5 +1,4 @@
-- [x] Update action function to handle delete with productDelete mutation
-- [x] Import useFetcher from @remix-run/react
-- [x] Add fetcher = useFetcher() in the component
-- [x] Modify handleClick to use fetcher.submit for delete
-- [x] Remove Form wrapper from Delete button
+- [x] Change export const Example to export default function AppIndex in app/routes/app._index.tsx
+- [x] Fix TypeScript errors: Promise<void> and setTimeout delay
+- [ ] Add TypeScript types to SetupGuide.tsx props
+- [ ] Verify the component works correctly after changes

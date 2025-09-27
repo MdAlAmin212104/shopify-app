@@ -1,102 +1,102 @@
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import {
-  Page,
-  Card,
-  EmptyState,
-  Grid,
-  BlockStack,
-  Text,
-  InlineStack,
-  Button,
-} from "@shopify/polaris";
+import { useState } from "react";
+import { Button } from "@shopify/polaris";
+import { SetupGuide } from "./SetupGuide";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  return null;
-};
+export default function AppIndex() {
+  const [showGuide, setShowGuide] = useState(true);
+  const [items, setItems] = useState(ITEMS);
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  return {};
-};
+  // Example of step complete handler, adjust for your use case
+  const onStepComplete = async (id: any) => {
+    try {
+      // API call to update completion state in DB, etc.
+      await new Promise<void>((res) =>
+        setTimeout(() => {
+          res();
+        }, 1000)
+      );
 
-export default function Index() {
-  
+      setItems((prev) => prev.map((item) => (item.id === id ? { ...item, complete: !item.complete } : item)));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  if (!showGuide) return <Button onClick={() => setShowGuide(true)}>Show Setup Guide</Button>;
 
   return (
-    <Page fullWidth>
-      {/* <Layout>
-        <Layout.Section>
-          <Card>
-            <p>View a summary of your online store’s performance.</p>
-            <div>
-              <h1 className="confirmation-text">this is text data to confermation your information </h1>
-            </div>
-          </Card>
-        </Layout.Section>
-      </Layout> */}
-      <Card>
-        <Grid>
-          <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6}}>
-            <img
-              src="https://cdn.shopify.com/static/images/polaris/patterns/callout.png"
-              alt="Puzzle graphic"
-              style={{ maxWidth: "200px" }}
-            />
-          </Grid.Cell>
-          <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 9, lg: 9, xl: 9 }}>
-            <BlockStack gap="200" align="center">
-              <Text as="h2" variant="headingLg">
-                Start creating puzzles
-              </Text>
-              <Text as="p" variant="bodyMd" tone="subdued">
-                Create and manage your collection of puzzles for players to enjoy.
-              </Text>
-              <InlineStack gap="200">
-                <Button>Learn more</Button>
-                <Button variant="primary">Create puzzle</Button>
-              </InlineStack>
-            </BlockStack>
-          </Grid.Cell>
-        </Grid>
-      </Card>
-       <Card>
-      <EmptyState
-        heading="Start creating puzzles"
-        action={{content: 'Create puzzle'}}
-        secondaryAction={{
-          content: 'Learn more',
-          url: 'https://shopify.dev/docs',
+    <div className="max-width m-auto">
+      <SetupGuide
+        onDismiss={() => {
+          setShowGuide(false);
+          setItems(ITEMS);
         }}
-        image="https://cdn.shopify.com/static/images/polaris/patterns/callout.png"
-      >
-        <p>Create and manage your collection of puzzles for players to enjoy.</p>
-      </EmptyState>
-    </Card>
-    <Grid>
-        {/* Left Side Image */}
-        <Grid.Cell columnSpan={{ xs: 6, md: 3 }}>
-          <img
-            src="https://cdn.shopify.com/static/images/polaris/patterns/callout.png"
-            alt="Puzzle graphic"
-            style={{ maxWidth: "200px", borderRadius: "12px" }}
-          />
-        </Grid.Cell>
-
-        {/* Right Side Content */}
-        <Grid.Cell columnSpan={{ xs: 6, md: 9 }}>
-          <BlockStack gap="200">
-            <Text as="h2" variant="headingLg">
-              Start creating puzzles
-            </Text>
-            <Text as="p" tone="subdued">
-              Create and manage your collection of puzzles for players to enjoy.
-            </Text>
-            <InlineStack gap="200">
-              <Button>Learn more</Button>
-              <Button variant="primary">Create puzzle</Button>
-            </InlineStack>
-          </BlockStack>
-        </Grid.Cell>
-      </Grid>
-    </Page>
+        onStepComplete={onStepComplete}
+        items={items}
+      />
+    </div>
   );
 }
+
+// EXAMPLE DATA - COMPONENT API
+const ITEMS = [
+  {
+    id: 0,
+    title: "Add your first product",
+    description:
+      "If checking out takes longer than 30 seconds, half of all shoppers quit. Let your customers check out quickly with a one-step payment solution.",
+    image: {
+      url: "https://cdn.shopify.com/shopifycloud/shopify/assets/admin/home/onboarding/shop_pay_task-70830ae12d3f01fed1da23e607dc58bc726325144c29f96c949baca598ee3ef6.svg",
+      alt: "Illustration highlighting ShopPay integration",
+    },
+    complete: false,
+    primaryButton: {
+      content: "Add product",
+      props: {
+        url: "https://www.example.com",
+        external: true,
+      },
+    },
+    secondaryButton: {
+      content: "Import products",
+      props: {
+        url: "https://www.example.com",
+        external: true,
+      },
+    },
+  },
+  {
+    id: 1,
+    title: "Share your online store",
+    description:
+      "Drive awareness and traffic by sharing your store via SMS and email with your closest network, and on communities like Instagram, TikTok, Facebook, and Reddit.",
+    image: {
+      url: "https://cdn.shopify.com/shopifycloud/shopify/assets/admin/home/onboarding/detail-images/home-onboard-share-store-b265242552d9ed38399455a5e4472c147e421cb43d72a0db26d2943b55bdb307.svg",
+      alt: "Illustration showing an online storefront with a 'share' icon in top right corner",
+    },
+    complete: false,
+    primaryButton: {
+      content: "Copy store link",
+      props: {
+        onAction: () => console.log("copied store link!"),
+      },
+    },
+  },
+  {
+    id: 2,
+    title: "Translate your store",
+    description:
+      "Translating your store improves cross-border conversion by an average of 13%. Add languages for your top customer regions for localized browsing, notifications, and checkout.",
+    image: {
+      url: "https://cdn.shopify.com/b/shopify-guidance-dashboard-public/nqjyaxwdnkg722ml73r6dmci3cpn.svgz",
+    },
+    complete: false,
+    primaryButton: {
+      content: "Add a language",
+      props: {
+        url: "https://www.example.com",
+        external: true,
+      },
+    },
+  },
+];
