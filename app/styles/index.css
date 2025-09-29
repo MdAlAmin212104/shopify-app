@@ -20,3 +20,9 @@
   max-width: 1200px;
   margin: 0 auto;
 }
+
+@media (min-width: 30.625em) {
+    .Polaris-Page {
+        padding: 0!important;
+    }
+}

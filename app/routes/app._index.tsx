@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Button } from "@shopify/polaris";
 import { SetupGuide } from "./SetupGuide";
+import DataTableExample from "./Component/table";
+import LayoutExample from "./Component/other";
+import DataTable from "./Component/dateTable";
 
 export default function AppIndex() {
   const [showGuide, setShowGuide] = useState(true);
@@ -34,6 +37,12 @@ export default function AppIndex() {
         onStepComplete={onStepComplete}
         items={items}
       />
+      <div>
+      <DataTableExample/>
+      <LayoutExample/>
+      <DataTable/>
+      </div>
+      
     </div>
   );
 }
