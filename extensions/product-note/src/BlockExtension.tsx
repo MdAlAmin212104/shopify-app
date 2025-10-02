@@ -3,25 +3,31 @@ import {
   AdminBlock,
   BlockStack,
   TextArea,
+  Button,
 } from '@shopify/ui-extensions-react/admin';
-
+import { useState } from 'react';
 
 const TARGET = 'admin.product-details.block.render';
 
 export default reactExtension(TARGET, () => <App />);
 
 function App() {
-  const metafield = useMetafield({ namespace: 'custom', key: 'product_note' });
+  const [note, setNote] = useState('');
+
+  const handleSave = () => {
+    console.log("Saved Note:", note);
+  };
 
   return (
     <AdminBlock title="Product Note">
-      <BlockStack>
+      <BlockStack gap="base">
         <TextArea
-          value={metafield?.value || ''}
-          onChange={metafield?.onChange}
           label="Product Note"
+          value={note}          
+          onChange={(value) => setNote(value)}
           rows={4}
         />
+        <Button onPress={handleSave}>Save Note</Button>
       </BlockStack>
     </AdminBlock>
   );
